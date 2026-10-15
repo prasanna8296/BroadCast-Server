@@ -14,26 +14,24 @@ The Broadcast Server is a simple command-line application that allows clients to
 
 ## Requirements
 
-- Go 1.16^ (or any programming language of your choice)
-- `websockets` library (if using Python)
+- Go 1.24 or newer
+- Dependencies: `github.com/gin-gonic/gin` and `github.com/gorilla/websocket`
 
 # Clone and setup
-git clone https://github.com/yourusername/broadcast-server.git
-cd broadcast-server
+git clone https://github.com/prasanna8296/BroadCast-Server.git
+cd Broadcast-Server
 
-# Initialize Go module
-go mod init broadcast
+# Download dependencies
 go mod tidy
 
-# Install dependencies
-go get github.com/gin-gonic/gin
-go get github.com/gorilla/websocket
-
 # Run server (in one terminal)
-go run main.go start 8080
+go run . start 8080
 
 # Run client (in another terminal)
-go run main.go connect localhost:8080
+go run . connect localhost:8080
+
+Any line typed into a client is sent to the server and broadcast to every
+connected client.
 
 ## Conclusion
 

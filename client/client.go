@@ -1,3 +1,6 @@
+// Package client implements an interactive command-line client for the
+// broadcast server. It connects over WebSocket, prints every message it
+// receives, and sends each line the user types to the server.
 package client
 
 import (
@@ -14,14 +17,16 @@ import (
 // prints messages received from the server, and sends lines typed on stdin to
 // the server until the connection closes or the user presses Ctrl+C.
 func StartClient(addr string) {
-	// Dial the server's WebSocket endpoint.
+	// Dial the server's WebSocket endpoint. The "ws://" scheme is cleartext;
+	// use "wss://" when connecting to a TLS-enabled server.
 	conn, _, err := websocket.DefaultDialer.Dial("ws://"+addr+"/ws", nil)
 	if err != nil {
 		log.Fatal("Failed to connect.", err)
 	}
 	defer conn.Close()
 
-	// Receiver goroutine: prints every broadcast message; closes done on exit.
+	// Receiver goroutine: prints every broadcast message; closes done on exit
+	// so the main loop below can notice that the connection has ended.
 	done := make(chan struct{})
 	go func() {
 		defer close(done)

@@ -1,7 +1,11 @@
+// Package server implements the WebSocket broadcast server: it accepts client
+// connections and relays every message it receives to all connected clients.
 package server
 
 import (
-    "github.com/gorilla/websocket"
+	"time"
+
+	"github.com/gorilla/websocket"
 )
 
 // Hub maintains the set of active WebSocket clients and broadcasts
@@ -14,6 +18,10 @@ type Hub struct {
 }
 
 // NewHub creates and returns a Hub with its channels and client set initialized.
+//
+// All channels are unbuffered: a send on register, unregister, or broadcast
+// blocks until the Run loop is ready to receive it, which naturally applies
+// backpressure and keeps access to the clients map single-threaded.
 func NewHub() *Hub {
 	return &Hub{
 		clients:    make(map[*websocket.Conn]bool),
@@ -41,7 +49,9 @@ func (h *Hub) Run() {
 		case message := <-h.broadcast:
 			// Relay the message to every connected client.
 			for conn := range h.clients {
-
+				// Bound the write so a single slow or dead client cannot stall
+				// the broadcast loop and delay every other client.
+				_ = conn.SetWriteDeadline(time.Now().Add(writeWait))
 				err := conn.WriteMessage(websocket.TextMessage, message)
 				if err != nil {
 					// Write failed, so the client is gone; drop it.

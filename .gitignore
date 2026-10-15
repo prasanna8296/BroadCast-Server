@@ -3,3 +3,4 @@ broadcast-server
 
 # Runtime logs
 *.log
+!README.md

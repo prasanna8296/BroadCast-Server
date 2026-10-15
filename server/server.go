@@ -17,6 +17,8 @@ func StartServer(port int) {
 	go hub.Run()
 
 	// Gin router; the only route is the WebSocket endpoint.
+	// gin.Default() includes the logger and recovery middleware, which is
+	// convenient for development.
 	r := gin.Default()
 	r.GET("/ws", func(ctx *gin.Context) {
 		HandleWebSocket(hub, ctx)

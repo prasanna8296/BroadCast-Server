@@ -1,3 +1,9 @@
+// Command broadcast-server is a small CLI that either runs a WebSocket
+// broadcast server or connects to one as an interactive client. It is meant
+// to be built and run as a single binary:
+//
+//	broadcast-server start   [port]      # run the server
+//	broadcast-server connect [host:port] # connect as a client
 package main
 
 import (
